@@ -1,6 +1,7 @@
 import serial
 import pymysql
 import numpy as np
+import time
 
 r=[]
 
@@ -163,6 +164,8 @@ mode      = 0
 comando   = 's'
 heading_x = 0
 
+time.sleep(5)
+
 while True:
     sql="SELECT Mode from movements"
     mode=connect_db(sql,"s")
@@ -170,14 +173,25 @@ while True:
         data=arduino.readline()
         print(data)
         get_data(data)
-    else: 
+        arduino.flushInput()
+        arduino.flush()
+        arduino.flushOutput()
+
+    else:
+        
         sql="SELECT direction FROM movements"
         res=connect_db(sql,"s")
         d=direction(res[0])
         arduino.write(d)
+        time.sleep(0.5)
+        arduino.write('m')
         data=arduino.readline()
         print(data)
         get_data(data)
+        arduino.flushInput()
+        arduino.flush()
+        arduino.flushOutput()
+        
 
         
 arduino.close()

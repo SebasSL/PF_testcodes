@@ -45,10 +45,13 @@ cursor = db.cursor()
 time.sleep(10)
 
 while True :
-    time.sleep(1)
+    time.sleep(0.5)
     arduino.write('m')
     data=arduino.readline()
     print(data)
     get_data(data)
+    arduino.flushInput()
+    arduino.flush()
+    arduino.flushOutput()
 
 arduino.close()

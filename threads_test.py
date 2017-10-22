@@ -4,10 +4,8 @@ import time
 import pymysql
 
 r=[]
-
-
-global data
-
+leer = 0
+data="0,0,0,0,0,0,0,0"
 
 def connect_db(sql,action):
     
@@ -42,15 +40,13 @@ def get_data(frame):
         connect_db(sql,"u")
 
 def db_main():
-    global data
     while True:
         leer=1
-        time.sleep(0.05)
+        time.sleep(0.2)
         get_data(data)
-        time.sleep(0.45)
+        time.sleep(0.3)
 
 def obtain_data():
-    global data
     while True:
         if leer == 1:
             arduino.write('m')
@@ -61,7 +57,6 @@ def obtain_data():
 arduino= serial.Serial('/dev/ttyUSB0',115200)
 db = pymysql.connect("35.161.176.110","dante","12345","DORA-E")
 cursor = db.cursor()
-leer=0
 
 time.sleep(10)
 
