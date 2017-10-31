@@ -21,25 +21,25 @@ def connect_db(sql,action):
 def direction(f1):
     if f1 == 5 :
         comando = 's'
-        #print('Quieto cachorro')
+        print('Quieto cachorro')
     if f1 == 1 :
         comando = 'l'
-        #print('Izquierda')
+        print('Izquierda')
     if f1 == 2 :
         comando = 'u'
-        #print('Parriba')
+        print('Parriba')
     if f1 == 3 :
         comando = 'd'
-        #print('Pabajo')
+        print('Pabajo')
     if f1 == 4 :
         comando = 'r'
-        #print('derecha')
+        print('derecha')
     if f1 == 6 :
         comando = 'g'
-        #print('Giro')
+        print('Giro')
     if f1 == 7 :
         comando = 'o'
-        #print('Opuesto')
+        print('Opuesto')
         
     return comando
 
@@ -53,61 +53,77 @@ def get_data(frame):
             if len(s[i]) > 14 :
                 s[i]=0
         
-        latitude  = s[4]
-        longitude = s[5]
-        heading   = s[3]
-        speed     = s[6]
-        height    = s[7]
+        latitude  = float(s[4])
+        longitude = float(s[5])
+        heading   = float(s[3])
+        speed     = float(s[6])
+        height    = float(s[7])
         
         sql1 = "UPDATE sensorvalues SET sensor1= "+`s[0]`+" , sensor2= "+`s[1]`+" , sensor3= "+`s[2]`+" , "
         sql2 = "latitude= "+`s[4]`+" , longitude= "+`s[5]`+" , heading= "+`s[3]`+" , Speed= "+`s[6]`+" , Height= "+`s[7]`
         sql  = sql1 + sql2
         connect_db(sql,"u")
-        
+        return [latitude,longitude,heading]
 
-def align():
+def align(heading_x,heading):
       
     heading_dif=np.abs(heading_x - heading);
     if heading_dif < 180:
         while heading_dif > 5: 
             d    = "o"
+            print(d)
             arduino.write(d)
+            time.sleep(0.5)
+            arduino.write('m')
             data = arduino.readline()
-            get_data(data)
+            [latitude,longitude,heading] = get_data(data)
             heading_dif=np.abs(heading_x - heading)
+            print(heading_dif, heading_x, heading)
             if heading_dif < 5:
                 d = "s"
+                print(d)
+                time.sleep(0.5)
                 arduino.write(d)
 
     else:
         while heading_dif > 5 :
             d    = "g"
+            print(d)
             arduino.write(d)
+            time.sleep(0.5) 
+            arduino.write('m')
             data = arduino.readline()
-            get_data(data)
+            [latitude,longitude,heading] = get_data(data)
+            arduino.flushInput()
+            arduino.flush()
+            arduino.flushOutput()
             heading_dif=np.abs(heading_x - heading)
+            print(heading_dif, heading_x, heading)
             if heading_dif < 5 :
                 d = "s"
+                time.sleep(0.5)
                 arduino.write(d)
 
 def calculus(frame):
-    get_data(frame)
+    [latitude,longitude,heading] = get_data(frame)
+    
     own_latitude  = latitude*(10000/90)
     own_longitude = longitude*(40000/360)
     dlat          = (own_latitude-des_latitude)
     dlon          = (own_longitude-des_longitude)
     dist          = np.sqrt(dlat**2 + dlon**2)
-    te            = (np.arctan2(dlon,dlat)) * 180/np.pi 
-    heading_x     = normalization()
+    te            = (np.arctan(dlon/dlat)) * 180/np.pi 
+    heading_x     = normalization(own_latitude,own_longitude,te)
     heading_dif=np.abs(heading_x - heading)
     if heading_dif > 5:
-        align()
+        align(heading_x,heading)
     else:
         d = "u"
+        print(d)
         arduino.write(d)
-    route()
+    route(dist)
 
-def normalization():
+def normalization(own_latitude,own_longitude,te):
     #caso 1
     if (des_latitude > own_latitude) and (des_longitude < own_longitude):
         te = te+360
@@ -139,7 +155,7 @@ def normalization():
     heading_x = te
     return heading_x;
 
-def route():
+def route(dist):
   if dist <= 0.005:
         while(dist <= 0.005):
             d = "s"
@@ -156,8 +172,8 @@ latitude  = 0.0
 longitude = 0.0
 heading   = 0.0
 te        = 0
-x_lat     = 11.0207550
-x_lon     = -74.8519370
+x_lat     = 11.006262
+x_lon     = -74.830661
 des_latitude  = x_lat*(10000/90)
 des_longitude = x_lon*(40000/360)
 mode      = 0  
@@ -169,10 +185,13 @@ time.sleep(5)
 while True:
     sql="SELECT Mode from movements"
     mode=connect_db(sql,"s")
-    if mode[0] == 1 : 
+    if mode[0] == 1 :
+        time.sleep(0.5)
+        arduino.write('m')
         data=arduino.readline()
         print(data)
-        get_data(data)
+        calculus(data)
+        
         arduino.flushInput()
         arduino.flush()
         arduino.flushOutput()
