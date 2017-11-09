@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import time
+import serial
+import os
 
 sq2=np.ones((9,9))
 
@@ -43,23 +45,31 @@ def draw(frame, out):
         pass
 
 #vs = PiVideoStream().start()
+
+arduino= serial.Serial('/dev/ttyUSB0',115200)
+i=0
+dirname=str(time.time())
+os.makedirs(dirname)
 time.sleep(2.0)
-
-while True:
+while i < 10:
+    i=i+1
+    d=b"g"
+    arduino.write(d)
+    time.sleep(0.5)
+    d=b"s"
+    arduino.write(d)
+    time.sleep(1)
+    frame = cv2.imread("/dev/shm/mjpeg/cam.jpg",cv2.IMREAD_COLOR)
+    blue = color_chase(frame)
+    draw(frame,blue)
+    print(i)
+    name = "image "+str(i)
+    cv2.imwrite(name+".jpg",frame)
+    cv2.imwrite(name+" blue.jpg",blue)
+    os.rename("/home/pi/Codes/frames/"+name+".jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+".jpg")
+    os.rename("/home/pi/Codes/frames/"+name+" blue.jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+" blue.jpg")
+    time.sleep(1)
     
-    #frame = vs.read()
-    #frame = imutils.resize(frame, width=720)
-    try:
-        frame = cv2.imread("/dev/shm/mjpeg/cam.jpg",cv2.IMREAD_COLOR)
-        blue = color_chase(frame)
-        draw(frame,blue)
-        cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1) & 0xFF
+    print(i)
 
-        if key == ord("q"):
-            break
-    except:
-        pass
- 
-cv2.destroyAllWindows()
-#vs.stop()
+

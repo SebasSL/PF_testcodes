@@ -52,14 +52,12 @@ def get_data(frame):
         for i in range(8):
             if len(s[i]) > 14 :
                 s[i]=0
-	try:        
-            latitude  = float(s[4])
-            longitude = float(s[5])
-            heading   = float(s[3])
-            speed     = float(s[6])
-            height    = float(s[7])
-	except:
-	    pass
+        
+        latitude  = float(s[4])
+        longitude = float(s[5])
+        heading   = float(s[3])
+        speed     = float(s[6])
+        height    = float(s[7])
         
         sql1 = "UPDATE sensorvalues SET sensor1= "+`s[0]`+" , sensor2= "+`s[1]`+" , sensor3= "+`s[2]`+" , "
         sql2 = "latitude= "+`s[4]`+" , longitude= "+`s[5]`+" , heading= "+`s[3]`+" , Speed= "+`s[6]`+" , Height= "+`s[7]`
@@ -163,22 +161,29 @@ def route(dist):
             d = "s"
             arduino.write(d)
             
+def writetxt(direc):
+    if direc != pre_dir :
+        sql = "UPDATE test SET end = 1 WHERE movement ="+`direc`+" "
+        connect_db(sql,"u")
+        
 
 
-arduino= serial.Serial('/dev/ttyUSB0',115200)
+    
+arduino= serial.Serial('/dev/ttyUSB3',115200)
 db = pymysql.connect("35.161.176.110","dante","12345","DORA-E")
 print("Iniciando")
 sql="UPDATE movements SET Mode=0"
 connect_db(sql,"u")
-sqls = "SELECT latitude , longitude FROM destination"
-[x_lat, x_lon] = connect_db(sqls, "s")
 
+pre_dir   = 0 
 latitude  = 0.0
 longitude = 0.0
 heading   = 0.0
 te        = 0
-des_latitude  = float(x_lat)*(10000/90)
-des_longitude = float(x_lon)*(40000/360)
+x_lat     = 11.006262
+x_lon     = -74.830661
+des_latitude  = x_lat*(10000/90)
+des_longitude = x_lon*(40000/360)
 mode      = 0  
 comando   = 's'
 heading_x = 0
@@ -205,7 +210,10 @@ while True:
         res=connect_db(sql,"s")
         d=direction(res[0])
         arduino.write(d)
-        time.sleep(0.5)
+        writetxt(res[0])
+        if res[0] != pre_dir:
+            pre_dir = res[0]
+        time.sleep(0.2)
         arduino.write('m')
         data=arduino.readline()
         print(data)
