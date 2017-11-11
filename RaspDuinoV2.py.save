@@ -53,68 +53,61 @@ def get_data(frame):
             if len(s[i]) > 14 :
                 s[i]=0
 	try:        
-	    heading   = float(s[3])
             latitude  = float(s[4])
             longitude = float(s[5])
+            heading   = float(s[3])
             speed     = float(s[6])
             height    = float(s[7])
 	except:
-	    heading   = 0
-	    latitude  = 0
-            longitude = 0
-	    speed     = 0
-	    height    = 0
-
+	    pass
+        
         sql1 = "UPDATE sensorvalues SET sensor1= "+`s[0]`+" , sensor2= "+`s[1]`+" , sensor3= "+`s[2]`+" , "
         sql2 = "latitude= "+`s[4]`+" , longitude= "+`s[5]`+" , heading= "+`s[3]`+" , Speed= "+`s[6]`+" , Height= "+`s[7]`
         sql  = sql1 + sql2
         connect_db(sql,"u")
-        return [latitude,longitude,heading,s[0],s[1],s[2]]
+        return [latitude,longitude,heading]
 
 def align(heading_x,heading):
       
     heading_dif=np.abs(heading_x - heading);
     if heading_dif < 180:
-        while heading_dif >15: 
+        while heading_dif >8: 
             d    = "o"
             print(d)
             arduino.write(d)
             time.sleep(0.5)
             arduino.write('m')
             data = arduino.readline()
-            print(data)
-            [latitude,longitude,heading,s1,s2,s3] = get_data(data)
+            [latitude,longitude,heading] = get_data(data)
             heading_dif=np.abs(heading_x - heading)
             print(heading_dif, heading_x, heading)
-            if heading_dif < 20:
+            if heading_dif < 8:
                 d = "s"
                 print(d)
+                time.sleep(0.5)
                 arduino.write(d)
-		time.sleep(0.5)
 
     else:
-        while heading_dif > 15:
+        while heading_dif > 8 :
             d    = "g"
             print(d)
             arduino.write(d)
             time.sleep(0.5) 
             arduino.write('m')
             data = arduino.readline()
-            print(data)
-            [latitude,longitude,heading,s1,s2,s3] = get_data(data)
+            [latitude,longitude,heading] = get_data(data)
             arduino.flushInput()
             arduino.flush()
             arduino.flushOutput()
             heading_dif=np.abs(heading_x - heading)
             print(heading_dif, heading_x, heading)
-            if heading_dif < 20:
+            if heading_dif < 8 :
                 d = "s"
-                print(d)
+                time.sleep(0.5)
                 arduino.write(d)
-		time.sleep(0.5)
 
 def calculus(frame):
-    [latitude,longitude,heading,s1,s2,s3] = get_data(frame)
+    [latitude,longitude,heading] = get_data(frame)
     
     own_latitude  = latitude*(10000/90)
     own_longitude = longitude*(40000/360)
@@ -124,17 +117,12 @@ def calculus(frame):
     te            = (np.arctan(dlon/dlat)) * 180/np.pi 
     heading_x     = normalization(own_latitude,own_longitude,te)
     heading_dif=np.abs(heading_x - heading)
-    print(heading_dif)
-    if heading_dif > 15:
+    if heading_dif > 8:
         align(heading_x,heading)
     else:
-	if s1 < 80:
-           d = "u"
-           print(d)
-           arduino.write(d)
-    	else:
-	   obs_action(heading)
-    
+        d = "u"
+        print(d)
+        arduino.write(d)
     route(dist)
 
 def normalization(own_latitude,own_longitude,te):
@@ -169,35 +157,11 @@ def normalization(own_latitude,own_longitude,te):
     heading_x = te
     return heading_x;
 
-def obs_action(heading):
-    h1=heading
-    h=0
-    d = "d" 
-    arduino.write(d)
-    time.sleep(0.5)
-    while (np.abs(h1-h)<90):
-        arduino.write("m")
-	data = arduino.readline()
-	print(data)
-	[_,_,h,_,_,_]=get_data(data)
-	print(np.abs(h1-h))
-	d="o"
-	arduino.write(d)
-
-    time.sleep(0.5)
-    d = "u"
-    arduino.write(d)
-    time.sleep(0.5)
-    d = "g"
-    arduino.write(d)
-    time.sleep(0.5)    
-
-
 def route(dist):
   if dist <= 0.005:
-	print("Llegueeee :D")
         while(dist <= 0.005):
             d = "s"
+		print
             arduino.write(d)
             
 
@@ -210,10 +174,6 @@ connect_db(sql,"u")
 sqls = "SELECT latitude , longitude FROM destination"
 [x_lat, x_lon] = connect_db(sqls, "s")
 
-s1        = 0
-s2        = 0
-s3        = 0
-obs       = 0 
 latitude  = 0.0
 longitude = 0.0
 heading   = 0.0

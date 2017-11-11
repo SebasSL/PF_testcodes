@@ -55,17 +55,18 @@ while i < 10:
     i=i+1
     d=b"g"
     arduino.write(d)
-    time.sleep(0.5)
+    time.sleep(0.2)
     d=b"s"
     arduino.write(d)
     time.sleep(1)
     frame = cv2.imread("/dev/shm/mjpeg/cam.jpg",cv2.IMREAD_COLOR)
+    orig = frame.copy()
     blue = color_chase(frame)
     draw(frame,blue)
     print(i)
     name = "image "+str(i)
     cv2.imwrite(name+".jpg",frame)
-    cv2.imwrite(name+" blue.jpg",blue)
+    cv2.imwrite(name+" blue.jpg",orig)
     os.rename("/home/pi/Codes/frames/"+name+".jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+".jpg")
     os.rename("/home/pi/Codes/frames/"+name+" blue.jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+" blue.jpg")
     time.sleep(1)
