@@ -74,6 +74,7 @@ while i < 10:
     blue = color_chase(frame)
     area = draw(frame,blue)
     print(i)
+    print(area)
     name = "image "+str(i)
     cv2.imwrite(name+".jpg",frame)
     cv2.imwrite(name+" blue.jpg",orig)
@@ -81,7 +82,7 @@ while i < 10:
     os.rename("/home/pi/Codes/frames/"+name+" blue.jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+" blue.jpg")
     try:
         if area > 0:
-            os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /dev/shm/mjpeg/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E')
+            os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /dev/shm/mjpeg/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E/')
             i = 10
     except:
         pass
