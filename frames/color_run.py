@@ -79,9 +79,12 @@ while i < 10:
     cv2.imwrite(name+" blue.jpg",orig)
     os.rename("/home/pi/Codes/frames/"+name+".jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+".jpg")
     os.rename("/home/pi/Codes/frames/"+name+" blue.jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+" blue.jpg")
-    if area > 0:
-    	os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /dev/shm/mjpeg/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E')
-    	i = 10
+    try:
+        if area > 0:
+	    os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /dev/shm/mjpeg/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E')
+    	    i = 10
+    except:
+        pass
     time.sleep(1)
     
     print(i)
