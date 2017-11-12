@@ -132,12 +132,9 @@ def calculus(frame):
     if heading_dif > 15:
         align(heading_x,heading)
     else:
-        if s1 > 80:
-            obs_action(heading)
-        else:
-            d = "u"
-            print(d)
-            arduino.write(d)
+        d = "u"
+        print(d)
+        arduino.write(d)
     
     route(dist)
 
