@@ -72,12 +72,11 @@ def get_data(frame):
         return [latitude,longitude,heading,s[0],s[1],s[2]]
 
 def align(heading_x,heading):
-    
-    heading_dif = heading_x - heading
-    print(heading_dif)
-    if heading_dif < 180 and  heading_dif > 0 :
-        while np.abs(heading_dif) >8: 
-            d    = "r"
+      
+    heading_dif = heading_x - heading_dif ;
+    if heading_dif < 180 and heading :
+        while heading_dif >15: 
+            d    = "l"
             print(d)
             arduino.write(d)
             time.sleep(0.5)
@@ -87,35 +86,35 @@ def align(heading_x,heading):
             [latitude,longitude,heading,s1,s2,s3] = get_data(data)
             heading_dif=np.abs(heading_x - heading)
             print(heading_dif, heading_x, heading)
-            if heading_dif < 8:
+            if heading_dif < 15:
                 d = "s"
                 print(d)
                 arduino.write(d)
 		time.sleep(0.5)
 
     else:
-        while np.abs(heading_dif) > 8:
-            d    = "l"
+        while heading_dif > 15:
+            d    = "r"
             print(d)
             arduino.write(d)
             time.sleep(0.5) 
             arduino.write('m')
             data = arduino.readline()
             print(data)
-            [latitude,longitude,heading,obs,_,_] = get_data(data)
+            [latitude,longitude,heading,s1,s2,s3] = get_data(data)
             arduino.flushInput()
             arduino.flush()
             arduino.flushOutput()
             heading_dif=np.abs(heading_x - heading)
             print(heading_dif, heading_x, heading)
-            if heading_dif < 8:
+            if heading_dif < 15:
                 d = "s"
                 print(d)
                 arduino.write(d)
 		time.sleep(0.5)
 
 def calculus(frame):
-    [latitude,longitude,heading,obs,_,_] = get_data(frame)
+    [latitude,longitude,heading,s1,s2,s3] = get_data(frame)
     
     own_latitude  = latitude*(10000/90)
     own_longitude = longitude*(40000/360)
@@ -125,16 +124,16 @@ def calculus(frame):
     te            = (np.arctan(dlon/dlat)) * 180/np.pi 
     heading_x     = normalization(own_latitude,own_longitude,te)
     heading_dif=np.abs(heading_x - heading)
-    print(heading_dif,dist*1000,obs)
-   # if obs >= 80.00 :
-       # obs_action(heading)
-
+    print(heading_dif)
     if heading_dif > 15:
         align(heading_x,heading)
     else:
-        d = "u"
-        print(d)
-        arduino.write(d)
+	#if s1 < 80:
+           d = "u"
+           print(d)
+           arduino.write(d)
+    	#else:
+	  # obs_action(heading)
     
     route(dist)
 
