@@ -84,7 +84,7 @@ while i < 10:
     try:
         if area > 0:
             os.rename("/home/pi/Codes/frames/"+dirname+"/"+name+".jpg", "/home/pi/Codes/frames/"+dirname+"/cam.jpg")
-            os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /dev/shm/mjpeg/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E/')
+            os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /home/pi/Codes/frames/'+dirname+'/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E/')
             i = 10
     except:
         pass

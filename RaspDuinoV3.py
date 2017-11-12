@@ -52,6 +52,10 @@ def get_data(frame):
         for i in range(8):
             if len(s[i]) > 14 :
                 s[i]=0
+
+	if float(s[0]) >= 80:
+	    s[0] = str(float(s[0])- 30)
+
 	try:        
 	    heading   = float(s[3])
             latitude  = float(s[4])
@@ -64,7 +68,7 @@ def get_data(frame):
             longitude = 0
 	    speed     = 0
 	    height    = 0
-
+	 
         sql1 = "UPDATE sensorvalues SET sensor1= "+`s[0]`+" , sensor2= "+`s[1]`+" , sensor3= "+`s[2]`+" , "
         sql2 = "latitude= "+`s[4]`+" , longitude= "+`s[5]`+" , heading= "+`s[3]`+" , Speed= "+`s[6]`+" , Height= "+`s[7]`
         sql  = sql1 + sql2
