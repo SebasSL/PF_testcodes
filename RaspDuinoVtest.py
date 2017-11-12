@@ -251,7 +251,7 @@ while True:
             d = "u"
             arduino.write(d)
             num = 0
-            while num < 8 :
+            while num < 7 :
                 time.sleep(0.3)
                 arduino.write('m')
                 data=arduino.readline()
@@ -264,7 +264,7 @@ while True:
             d = "d"
             arduino.write(d)
             num = 0
-            while num < 3 :
+            while num < 4 :
                 time.sleep(0.3)
                 arduino.write('m')
                 data=arduino.readline()
@@ -277,7 +277,7 @@ while True:
             d = "l"
             arduino.write(d)
             num = 0
-            while num < 4 :
+            while num < 8 :
                 time.sleep(0.3)
                 arduino.write('m')
                 data=arduino.readline()
@@ -290,7 +290,7 @@ while True:
             d = "r"
             arduino.write(d)
             num = 0
-            while num < 4 :
+            while num < 8 :
                 time.sleep(0.3)
                 arduino.write('m')
                 data=arduino.readline()
@@ -300,6 +300,7 @@ while True:
                 arduino.flush()
                 arduino.flushOutput()
                 num = num + 1
+            meh = 0
             
             
 

@@ -80,7 +80,7 @@ def align(heading_x,heading):
     heading_dif = heading_x - heading
     print(heading_dif)
     if heading_dif < 180 and  heading_dif > 0 :
-        while np.abs(heading_dif) >8: 
+        while np.abs(heading_dif) >3: 
             d    = "r"
             print(d)
             arduino.write(d)
@@ -91,7 +91,7 @@ def align(heading_x,heading):
             [latitude,longitude,heading,s1,s2,s3] = get_data(data)
             heading_dif=np.abs(heading_x - heading)
             print(heading_dif, heading_x, heading)
-            if heading_dif < 8:
+            if heading_dif < 3:
                 d = "s"
                 print(d)
                 arduino.write(d)
@@ -133,7 +133,7 @@ def calculus(frame):
    # if obs >= 80.00 :
        # obs_action(heading)
 
-    if heading_dif > 15:
+    if heading_dif > 10:
         align(heading_x,heading)
     else:
         d = "u"
