@@ -83,6 +83,7 @@ while i < 10:
     os.rename("/home/pi/Codes/frames/"+name+" blue.jpg", "/home/pi/Codes/frames/"+dirname+"/"+name+" blue.jpg")
     try:
         if area > 0:
+            os.rename("/home/pi/Codes/frames/"+dirname+"/"+name+".jpg", "/home/pi/Codes/frames/"+dirname+"/cam.jpg")
             os.system('sudo scp -i /home/pi/.ssh/MyKeyPair.pem  /dev/shm/mjpeg/cam.jpg  ubuntu@35.161.176.110:/var/www/html/DORA-E/')
             i = 10
     except:
