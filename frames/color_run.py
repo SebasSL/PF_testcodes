@@ -51,6 +51,7 @@ def draw(frame, out):
                 area = (x2[i]-x1[i])*(y2[i]-y1[i])
         
         cv2.rectangle(frame,(xi,yi),(xf,yf),(0,255,0),2);
+        return area
     except:
         pass
 
